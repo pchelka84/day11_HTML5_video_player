@@ -5,8 +5,9 @@ const progress = player.querySelector('.progress');
 const progressBar = player.querySelector('.progress__filled');
 const toggle = player.querySelector('.toggle');
 const skipButtons = player.querySelectorAll('[data-skip]');
-const ranges = player.querySelector('.player__slider');
+const ranges = player.querySelectorAll('.player__slider');
 
+let isDown = false;
 
 /* Build our functions */
 function togglePlay() {
@@ -16,13 +17,17 @@ function togglePlay() {
 function updateButton() {
   const icon = this.paused ? '►' : '❚ ❚';
   toggle.textContent = icon;
-  console.log('Update button');
 }
 
 function skip() {
  console.log(this.dataset.skip);
  // Adding skip time and converting to a true number
  video.currentTime += parseFloat(this.dataset.skip);
+}
+
+function handleRangeUpdate() {
+  if (!isDown) return;
+  video[this.name] = this.value;
 }
 
 /* Hook up the event listeners */
@@ -32,4 +37,10 @@ video.addEventListener('pause', updateButton);
 
 toggle.addEventListener('click', togglePlay);
 skipButtons.forEach(button => button.addEventListener('click', skip));
+ranges.forEach(range => range.addEventListener('change', handleRangeUpdate));
+ranges.forEach(range => range.addEventListener('mousemove', handleRangeUpdate));
+ranges.forEach(range => range.addEventListener('mousedown', e => isDown = true));
+ranges.forEach(range => range.addEventListener('mouseup', () => isDown = false));
+ranges.forEach(range => range.addEventListener('mouseout', () => isDown = false));
+
 
